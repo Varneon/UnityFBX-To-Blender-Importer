@@ -24,7 +24,7 @@ If you only need the Python code for importing the model(s) yourself through Ble
 # How to use Blender FBX Importer
 
 ## Installation:
-1. Download latest Unitypackage from [here](https://github.com/UnityFBX-To-Blender-Importer/releases/latest)
+1. Download latest Unitypackage from [here](https://github.com/Varneon/UnityFBX-To-Blender-Importer/releases/latest)
 2. Import the downloaded Unitypackage into your Unity project
 3. Right click a single or multiple FBX assets and select `Import FBX to Blender` (After the importer window has been opened, you can also drag & drop model files into the window)
 
