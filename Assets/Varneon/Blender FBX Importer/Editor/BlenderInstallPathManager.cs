@@ -28,10 +28,7 @@ namespace Varneon.BlenderFBXImporter
         {
             if (!IsBlenderInstallPathValid(path))
             {
-                if (string.IsNullOrEmpty(SetBlenderExecutablePath()))
-                {
-                    return false;
-                }
+                return false;
             }
 
             return true;
