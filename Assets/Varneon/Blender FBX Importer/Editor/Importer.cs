@@ -35,6 +35,8 @@ namespace Varneon.BlenderFBXImporter
 
             if (!BlenderInstallPathManager.ValidateBlenderInstallPath(executablePath))
             {
+                EditorUtility.DisplayDialog("Unable to launch Blender!", "Blender installation path hasn't been defined and the application couldn't be launched", "OK");
+
                 throw new Exception("Invalid Blender executable path!");
             }
 
