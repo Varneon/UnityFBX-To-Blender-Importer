@@ -23,6 +23,12 @@ If you only need the Python code for importing the model(s) yourself through Ble
 
 ---
 
+# Compatibility Notice
+
+This extension has so far only been tested in **Unity 2019.4.31f1** and **Blender 2.9+**. If you have issues using it in other versions, please let me know so I can look into adding compatibility for them.
+
+---
+
 # How to install and use FBX Importer
 
 ## Installation:
