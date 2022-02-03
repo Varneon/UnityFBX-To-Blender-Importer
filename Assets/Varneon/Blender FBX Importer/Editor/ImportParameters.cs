@@ -21,10 +21,16 @@ namespace Varneon.BlenderFBXImporter
         /// </summary>
         public bool ApplyTransform { get; private set; }
 
-        public ImportParameters(float scale = 1f, bool applyTransforms = true)
+        /// <summary>
+        /// Import Animation, Import FBX animation
+        /// </summary>
+        public bool UseAnim { get; private set; }
+
+        public ImportParameters(float scale = 1f, bool applyTransforms = true, bool useAnim = true)
         {
             Scale = scale;
             ApplyTransform = applyTransforms;
+            UseAnim = useAnim;
         }
 
         /// <summary>
@@ -35,6 +41,8 @@ namespace Varneon.BlenderFBXImporter
             Scale = EditorGUILayout.FloatField("Scale", Mathf.Clamp(Scale, 0.001f, 1000f));
 
             ApplyTransform = EditorGUILayout.Toggle("Apply Transform", ApplyTransform);
+
+            UseAnim = EditorGUILayout.Toggle("Import Animation", UseAnim);
         }
 
         /// <summary>
@@ -43,7 +51,7 @@ namespace Varneon.BlenderFBXImporter
         /// <returns>Formatted import operator parameters</returns>
         public string GetImportOperatorParameters()
         {
-            return $"global_scale = {Scale}, bake_space_transform = {ApplyTransform}";
+            return $"global_scale = {Scale}, bake_space_transform = {ApplyTransform}, use_anim = {UseAnim}";
         }
     }
 }
