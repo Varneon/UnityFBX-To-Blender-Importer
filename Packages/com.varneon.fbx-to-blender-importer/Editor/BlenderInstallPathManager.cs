@@ -10,6 +10,9 @@ namespace Varneon.BlenderFBXImporter
     /// </summary>
     internal static class BlenderInstallPathManager
     {
+        private static string Extension => Application.platform == RuntimePlatform.WindowsEditor ? "exe" : string.Empty;
+        private static string Executable => Application.platform == RuntimePlatform.WindowsEditor ? "blender.exe" : Application.platform == RuntimePlatform.OSXEditor ? "Blender" : "blender";
+        private static string DefaultBlenderPath => Application.platform == RuntimePlatform.OSXEditor ? "/Applications/Blender.app/Contents/MacOS/Blender" : null;
         private const string BlenderInstallPathKey = "Varneon/BlenderFBXImporter/BlenderInstallPath";
 
         private static string BlenderInstallPath;
@@ -21,7 +24,7 @@ namespace Varneon.BlenderFBXImporter
 
         internal static string GetBlenderInstallPath(bool openExplorerIfInvalid = true)
         {
-            return BlenderInstallPath = EditorPrefs.HasKey(BlenderInstallPathKey) ? EditorPrefs.GetString(BlenderInstallPathKey) : openExplorerIfInvalid ? SetBlenderExecutablePath() : null;
+            return BlenderInstallPath = EditorPrefs.HasKey(BlenderInstallPathKey) ? EditorPrefs.GetString(BlenderInstallPathKey) : ValidateBlenderInstallPath(DefaultBlenderPath) ? DefaultBlenderPath : openExplorerIfInvalid ? SetBlenderExecutablePath() : null;
         }
 
         internal static bool ValidateBlenderInstallPath(string path)
@@ -36,12 +39,17 @@ namespace Varneon.BlenderFBXImporter
 
         private static bool IsBlenderInstallPathValid(string path)
         {
-            return !string.IsNullOrEmpty(path) && File.Exists(path) && Path.GetFileName(path) == "blender.exe";
+            return !string.IsNullOrEmpty(path) && File.Exists(path) && Path.GetFileName(path) == Executable;
         }
 
         internal static string SetBlenderExecutablePath()
         {
-            string path = EditorUtility.OpenFilePanel("Select Blender Executable", string.Empty, "exe");
+            string path = EditorUtility.OpenFilePanel("Select Blender Executable", string.Empty, Extension);
+
+            // Account for MacOS bundles
+            if (Application.platform == RuntimePlatform.OSXEditor && !string.IsNullOrEmpty(path) && Path.GetFileName(path) == "Blender.app") {
+                path = Path.Combine(path, "Contents/MacOS/Blender");
+            }
 
             if (IsBlenderInstallPathValid(path))
             {
