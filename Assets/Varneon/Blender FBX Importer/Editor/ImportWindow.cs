@@ -55,7 +55,7 @@ namespace Varneon.BlenderFBXImporter
             {
                 Path = path;
                 RelativePath = Path;
-                string appPath = Application.dataPath.Replace('/', '\\');
+                string appPath = Application.platform == RuntimePlatform.WindowsEditor ? Application.dataPath.Replace('/', '\\') : Application.dataPath;
                 RelativePath = RelativePath.Replace(appPath.Substring(0, appPath.IndexOf("Assets")), string.Empty);
                 Asset = AssetDatabase.LoadAssetAtPath(RelativePath, typeof(Object));
                 Content = new GUIContent(Path, AssetPreview.GetAssetPreview(Asset));
