@@ -25,13 +25,16 @@ If you only need the Python code for importing the model(s) yourself through Ble
 
 # Compatibility Notice
 
-This extension has so far only been tested in **Unity 2019.4.31f1** and **Blender 2.9+**. If you have issues using it in other versions, please let me know so I can look into adding compatibility for them.
+This extension has so far only been tested in **Unity 2019.4.31f1** and **Blender 2.9 - 3.2**. If you have issues using it in other versions, please let me know so I can look into adding compatibility for them.
 
 ---
 
 # How to install and use FBX Importer
 
-## Installation:
+## Installation via Unity Package Manager (git):
+- Navigate to your toolbar: `Window` > `Package Manager` > `[+]` > `Add package from git URL...` and type in: `https://github.com/Varneon/UnityFBX-To-Blender-Importer.git?path=/Packages/com.varneon.fbx-to-blender-importer`
+
+## Installation via Unitypackage:
 1. Download latest Unitypackage from [here](https://github.com/Varneon/UnityFBX-To-Blender-Importer/releases/latest)
 2. Import the downloaded Unitypackage into your Unity project
 
