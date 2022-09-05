@@ -1,5 +1,5 @@
 {
-    "name": "Varneon.BlenderFBXImporter",
+    "name": "Varneon.BlenderFBXImporter.Editor",
     "references": [],
     "includePlatforms": [
         "Editor"
