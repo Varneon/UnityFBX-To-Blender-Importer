@@ -6,5 +6,7 @@
   "author": {
     "name": "Varneon",
     "url": "https://github.com/Varneon"
-  }
+  },
+  "unity": "2019.4",
+  "unityRelease": "29f1"
 }
