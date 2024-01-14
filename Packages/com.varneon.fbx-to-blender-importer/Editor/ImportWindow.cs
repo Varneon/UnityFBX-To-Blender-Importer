@@ -7,6 +7,8 @@ using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using DragAndDropState = Varneon.BlenderFBXImporter.DragAndDropHandler.DragAndDropState;
+using UnityEditor.PackageManager.Requests;
+using UnityEditor.PackageManager;
 
 namespace Varneon.BlenderFBXImporter
 {
@@ -36,10 +38,13 @@ namespace Varneon.BlenderFBXImporter
 
         Func<string, bool> TryAddModelPathFunc;
 
+        private static string ApplicationDataPath;
+
+        private static UnityEditor.PackageManager.PackageInfo[] LocalPackages;
+
         private struct FBXAsset
         {
             internal string Path;
-            internal string RelativePath;
             internal GUIContent Content;
             internal Object Asset;
             internal int ID;
@@ -56,13 +61,14 @@ namespace Varneon.BlenderFBXImporter
 
             internal FBXAsset(string path)
             {
-                Path = path;
-                RelativePath = Path;
-                string appPath = Application.platform == RuntimePlatform.WindowsEditor ? Application.dataPath.Replace('/', '\\') : Application.dataPath;
-                RelativePath = RelativePath.Replace(appPath.Substring(0, appPath.IndexOf("Assets")), string.Empty);
-                Asset = AssetDatabase.LoadAssetAtPath(RelativePath, typeof(Object));
+                Asset = AssetDatabase.LoadAssetAtPath(path, typeof(Object));
+
+                Path = System.IO.Path.GetFullPath(path);
+
                 Content = new GUIContent(Path, AssetPreview.GetAssetPreview(Asset));
+
                 ID = Asset.GetInstanceID();
+
                 Status = PreviewStatus.Loading;
             }
 
@@ -91,15 +97,20 @@ namespace Varneon.BlenderFBXImporter
 
         private void OnEnable()
         {
+            ApplicationDataPath = Application.dataPath.Replace('\\', '/');
+
             titleContent = new GUIContent("Blender FBX Importer", windowIcon);
 
             minSize = MinWindowSize;
 
-            models.AddRange(GetSelectedFBXAssetPaths().Select(c => new FBXAsset(c)));
-
             TryAddModelPathFunc = path => TryAddModelPath(path);
 
             handleDragAndDrop = DragAndDropHandler.HandleFileDragAndDrop(dragAndDropState, TryAddModelPathFunc);
+
+            foreach(string path in GetSelectedFBXAssetPaths())
+            {
+                TryAddModelPath(path);
+            }
         }
 
         private void OnGUI()
@@ -202,9 +213,9 @@ namespace Varneon.BlenderFBXImporter
         {
             path = Path.GetFullPath(path);
 
-            if (models.Where(c => c.Path.Equals(path)).Count() == 0)
+            if (!models.Any(c => c.Path.Equals(path)) && TryConvertToRelativePath(path, out string relativePath))
             {
-                models.Add(new FBXAsset(path));
+                models.Add(new FBXAsset(relativePath));
 
                 return true;
             }
@@ -230,6 +241,69 @@ namespace Varneon.BlenderFBXImporter
         private void CopyBlenderFBXImportCode()
         {
             EditorGUIUtility.systemCopyBuffer = PythonOperatorGenerator.GetBlenderFBXImportPythonScript(models.Select(c => c.Path).ToArray(), false, importParameters);
+        }
+
+        /// <summary>
+        /// Converts full path to one relative to the project
+        /// </summary>
+        /// <param name="path">Full path pointing inside the project</param>
+        /// <returns>Path relative to the project</returns>
+        private static bool TryConvertToRelativePath(string path, out string relativePath)
+        {
+            // If string is null or empty, throw an exception
+            if (string.IsNullOrEmpty(path)) { throw new ArgumentException("Invalid path!", nameof(path)); }
+
+            // If the directory is already valid, return original path
+            if (AssetDatabase.IsValidFolder(Path.GetDirectoryName(path))) { relativePath = path; return true; }
+
+            // Get the project's root directory (Trim 'Assets' from the end of the path)
+            string projectDirectory = ApplicationDataPath.Substring(0, ApplicationDataPath.Length - 6);
+
+            // Ensure that the path is the full path
+            path = Path.GetFullPath(path);
+
+            // Replace backslashes with forward slashes
+            path = path.Replace('\\', '/');
+
+            // If path doesn't point inside the project, scan all packages
+            if (!path.StartsWith(projectDirectory))
+            {
+                if(LocalPackages == null)
+                {
+                    // Request all packages in offline mode
+                    ListRequest request = Client.List(true, false);
+
+                    // Wait until the request is completed
+                    while (!request.IsCompleted) { }
+
+                    if (request.Status == StatusCode.Success)
+                    {
+                        LocalPackages = request.Result.Where(p => p.source.Equals(PackageSource.Local)).ToArray();
+                    }
+                }
+
+                // Try to find a package with same path as the one we are validating
+                UnityEditor.PackageManager.PackageInfo info = LocalPackages.FirstOrDefault(p => path.StartsWith(p.resolvedPath.Replace('\\', '/')));
+
+                // If a package with same path exists, return resolved path
+                if (info != null)
+                {
+                    string resolvedPackagePath = info.resolvedPath.Replace('\\', '/');
+
+                    relativePath = string.Concat("Packages/", info.name, path.Substring(resolvedPackagePath.Length));
+
+                    return true;
+                }
+
+                relativePath = string.Empty;
+
+                return false;
+            }
+
+            // Return a path relative to the project
+            relativePath = path.Replace(projectDirectory, string.Empty);
+
+            return true;
         }
     }
 }
