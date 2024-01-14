@@ -15,6 +15,9 @@ namespace Varneon.BlenderFBXImporter
     /// </summary>
     internal class ImportWindow : EditorWindow
     {
+        [SerializeField]
+        private Texture2D windowIcon;
+
         List<FBXAsset> models = new List<FBXAsset>();
 
         ImportParameters importParameters = new ImportParameters(1f, true);
@@ -83,14 +86,15 @@ namespace Varneon.BlenderFBXImporter
         [MenuItem(MenuPath, false)]
         private static void OpenImportPrompt()
         {
-            ImportWindow window = GetWindow<ImportWindow>();
-            window.titleContent = new GUIContent("Blender FBX Importer", Resources.Load<Texture2D>("Icon_BlenderFBXImporter"));
-            window.minSize = MinWindowSize;
-            window.Show();
+            GetWindow<ImportWindow>();
         }
 
         private void OnEnable()
         {
+            titleContent = new GUIContent("Blender FBX Importer", windowIcon);
+
+            minSize = MinWindowSize;
+
             models.AddRange(GetSelectedFBXAssetPaths().Select(c => new FBXAsset(c)));
 
             TryAddModelPathFunc = path => TryAddModelPath(path);
