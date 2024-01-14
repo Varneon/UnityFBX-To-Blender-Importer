@@ -20,23 +20,23 @@ namespace Varneon.BlenderFBXImporter
         [SerializeField]
         private Texture2D windowIcon;
 
-        List<FBXAsset> models = new List<FBXAsset>();
+        private List<FBXAsset> models = new List<FBXAsset>();
 
-        ImportParameters importParameters = new ImportParameters(1f, true);
+        private ImportParameters importParameters = new ImportParameters(1f, true);
 
-        Vector2 scrollPos = Vector2.zero;
+        private Vector2 scrollPos = Vector2.zero;
 
-        float previewSize = 50;
+        private float previewSize = 50;
 
-        const string MenuPath = "Assets/Import FBX to Blender";
+        private const string MenuPath = "Assets/Import FBX to Blender";
 
-        static readonly Vector2 MinWindowSize = new Vector2(512, 512);
+        private static readonly Vector2 MinWindowSize = new Vector2(512, 512);
 
-        DragAndDropState dragAndDropState;
+        private DragAndDropState dragAndDropState;
 
-        Action handleDragAndDrop;
+        private Action handleDragAndDrop;
 
-        Func<string, bool> TryAddModelPathFunc;
+        private Func<string, bool> TryAddModelPathFunc;
 
         private static string ApplicationDataPath;
 
