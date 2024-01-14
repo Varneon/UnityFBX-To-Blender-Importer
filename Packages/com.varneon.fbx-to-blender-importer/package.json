@@ -1,6 +1,6 @@
 {
   "name": "com.varneon.fbx-to-blender-importer",
-  "version": "0.3.0",
+  "version": "0.3.1-beta.1",
   "displayName": "FBX To Blender Importer",
   "description": "Editor extension for importing FBX models from Unity into Blender using Python expressions",
   "author": {
